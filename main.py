@@ -1,13 +1,14 @@
 import pygame
 import json
+import sys
 
 SQUARE_SIZE = 80
 BOARD_SIZE = SQUARE_SIZE * 8
 PADDING = 50
 COLS = 8 
 ROWS = 8
-
-running = True
+LIGHT_COLOR = (240, 217, 181)
+DARK_COLOR = (181, 136, 99)
 
 pygame.init()
 
@@ -35,21 +36,35 @@ def generate_board(rows, cols):
     return board
 
 def render_board(data):
-    pass
+    for i, row in enumerate(data):
+        for j, item in enumerate(row):
+            if item == "w":
+                color = LIGHT_COLOR
+            elif item == "b":
+                color = DARK_COLOR
+
+            x = j * SQUARE_SIZE
+            y = i * SQUARE_SIZE
+
+            pygame.draw.rect(screen, color, (x + PADDING, y + PADDING, SQUARE_SIZE, SQUARE_SIZE))
 
 def format_output(data):
     json_text = json.dumps(data)
     
     return json_text.replace("],", "],\n")
 
-while running:
+while True:
     clock.tick(60)
 
     for event in pygame.event.get():
         if event == pygame.QUIT:
-            running = False
+            pygame.quit()
+            sys.exit()
 
-    screen.fill((0, 0, 0))
-    pygame.display.flip()
+    board = generate_board(ROWS, COLS)
+
+    render_board(board)
+
+    pygame.display.update()
 
 print(format_output(generate_board(ROWS, COLS)))
