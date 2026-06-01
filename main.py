@@ -7,10 +7,12 @@ PADDING = 50
 COLS = 8 
 ROWS = 8
 
+running = True
+
 pygame.init()
 
 screen = pygame.display.set_mode((BOARD_SIZE + PADDING * 2, BOARD_SIZE + PADDING * 2))
-
+clock = pygame.time.Clock()
 
 def generate_board(rows, cols):
     board = []
@@ -32,9 +34,22 @@ def generate_board(rows, cols):
 
     return board
 
+def render_board(data):
+    pass
+
 def format_output(data):
     json_text = json.dumps(data)
     
     return json_text.replace("],", "],\n")
+
+while running:
+    clock.tick(60)
+
+    for event in pygame.event.get():
+        if event == pygame.QUIT:
+            running = False
+
+    screen.fill((0, 0, 0))
+    pygame.display.flip()
 
 print(format_output(generate_board(ROWS, COLS)))
