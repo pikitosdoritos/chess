@@ -48,16 +48,11 @@ def render_board(data):
 
             pygame.draw.rect(screen, color, (x + PADDING, y + PADDING, SQUARE_SIZE, SQUARE_SIZE))
 
-def format_output(data):
-    json_text = json.dumps(data)
-    
-    return json_text.replace("],", "],\n")
-
 while True:
     clock.tick(60)
 
     for event in pygame.event.get():
-        if event == pygame.QUIT:
+        if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
 
@@ -66,5 +61,3 @@ while True:
     render_board(board)
 
     pygame.display.update()
-
-print(format_output(generate_board(ROWS, COLS)))
