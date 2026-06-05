@@ -8,6 +8,8 @@ PADDING = 50
 COLS = 8 
 ROWS = 8
 
+
+
 LIGHT_COLOR = (240, 217, 181)
 DARK_COLOR = (181, 136, 99)
 BG_COLOR = (30, 30, 30)
@@ -65,7 +67,7 @@ def generate_board(data):
             
     return data
 
-def render_board(data, screen):
+def render_board(data, screen, selection):
     font = pygame.font.SysFont("segoeuisymbol", 70)
     board_rect = pygame.Rect(PADDING, PADDING, BOARD_SIZE, BOARD_SIZE)
 
@@ -89,6 +91,7 @@ def render_board(data, screen):
             board_surface.blit(figure_text, figure_rect)
 
     render_labels(screen)
+    draw_selection(*selection)
 
 def render_labels(surface):
     font = pygame.font.Font(None, 50)
@@ -120,19 +123,36 @@ def render_labels(surface):
     surface.blit(v_surface, (0, PADDING))
     surface.blit(v_surface, (PADDING + BOARD_SIZE, PADDING))
 
+def draw_selection(row, col):
+    if row == None or col == None:
+        return
+    
+    x = col * SQUARE_SIZE + PADDING
+    y = row * SQUARE_SIZE + PADDING
+    
+    pygame.draw.rect(screen, (100, 150, 255), (x, y, SQUARE_SIZE, SQUARE_SIZE), 4)
+
 clear_board = generate_clear_board()
 board = generate_board(clear_board)
 
+selection = [None, None]
+
 while True:
     clock.tick(60)
+
+    screen.fill(BG_COLOR)
+    render_board(board, screen, selection)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_x, mouse_y = event.pos
+            col = (mouse_x - PADDING) // SQUARE_SIZE
+            row = (mouse_y - PADDING) // SQUARE_SIZE
 
-    screen.fill(BG_COLOR)
-
-    render_board(board, screen)
+            if 0 <= row < ROWS and 0 <= col < COLS:
+                selection = [row, col]
 
     pygame.display.update()
