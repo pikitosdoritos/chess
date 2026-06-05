@@ -91,7 +91,6 @@ def render_board(data, screen, selection):
             board_surface.blit(figure_text, figure_rect)
 
     render_labels(screen)
-    # 1
     draw_selection(*selection)
     draw_suggestion(suggestions)
 
@@ -126,7 +125,6 @@ def render_labels(surface):
     surface.blit(v_surface, (PADDING + BOARD_SIZE, PADDING))
 
 def has_figure(color, row, col):
-    # 2
     if color == "white":
         return board[row][col].isupper()
     elif color == "black":
