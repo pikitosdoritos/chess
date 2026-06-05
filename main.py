@@ -123,6 +123,12 @@ def render_labels(surface):
     surface.blit(v_surface, (0, PADDING))
     surface.blit(v_surface, (PADDING + BOARD_SIZE, PADDING))
 
+def has_figure(color, row, col):
+    if color == "white":
+        return board[row][col].isupper()
+    elif color == "black":
+        return board[row][col].islower()
+    
 def draw_selection(row, col):
     if row == None or col == None:
         return
@@ -136,6 +142,8 @@ clear_board = generate_clear_board()
 board = generate_board(clear_board)
 
 selection = [None, None]
+
+current_player = "white"
 
 while True:
     clock.tick(60)
@@ -153,6 +161,8 @@ while True:
             row = (mouse_y - PADDING) // SQUARE_SIZE
 
             if 0 <= row < ROWS and 0 <= col < COLS:
-                selection = [row, col]
+                if has_figure(current_player, row, col):
+                    selection = [row, col]
+
 
     pygame.display.update()
