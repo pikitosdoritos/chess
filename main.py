@@ -91,7 +91,9 @@ def render_board(data, screen, selection):
             board_surface.blit(figure_text, figure_rect)
 
     render_labels(screen)
+    # 1
     draw_selection(*selection)
+    draw_suggestion(suggestions)
 
 def render_labels(surface):
     font = pygame.font.Font(None, 50)
@@ -124,6 +126,7 @@ def render_labels(surface):
     surface.blit(v_surface, (PADDING + BOARD_SIZE, PADDING))
 
 def has_figure(color, row, col):
+    # 2
     if color == "white":
         return board[row][col].isupper()
     elif color == "black":
@@ -138,10 +141,23 @@ def draw_selection(row, col):
     
     pygame.draw.rect(screen, (100, 150, 255), (x, y, SQUARE_SIZE, SQUARE_SIZE), 4)
 
+def get_suggestions(row, col):
+    pass
+
+def draw_suggestion(moves):
+    for row, col in moves:
+        x = col * SQUARE_SIZE + PADDING
+        y = row * SQUARE_SIZE + PADDING
+
+        square_rect = pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE)
+        
+        pygame.draw.circle(screen, (175, 205, 100), square_rect.center, 10)
+
 clear_board = generate_clear_board()
 board = generate_board(clear_board)
 
 selection = [None, None]
+suggestions = []
 
 current_player = "white"
 
@@ -150,6 +166,7 @@ while True:
 
     screen.fill(BG_COLOR)
     render_board(board, screen, selection)
+    
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -163,6 +180,6 @@ while True:
             if 0 <= row < ROWS and 0 <= col < COLS:
                 if has_figure(current_player, row, col):
                     selection = [row, col]
-
+                    suggestions = get_suggestions(row, col)
 
     pygame.display.update()
