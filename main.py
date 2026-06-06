@@ -30,7 +30,9 @@ symbols = {
         "k": "♚",
     }
 
-start_board = "RNBQKBNR/PPPPPPPP/P7/8/8/8/pppppppp/rnbqkbnr"
+start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
+
+start_board = "p11P1111/11111111/11111111/11111111/11111111/11111111/11111111/11111111"
 
 pygame.init()
 
@@ -133,10 +135,11 @@ def draw_selection(row, col):
 def get_pawn_moves(row, col, figure):
     moves = []
 
-    if row >= len(board) - 1:
-        return moves
 
     if figure.isupper():
+        if row == len(board) - 1:
+            return moves
+        
         if board[row + 1][col] == "":
             moves.append((row + 1, col))
 
@@ -144,6 +147,9 @@ def get_pawn_moves(row, col, figure):
                 moves.append((row + 2, col))
 
     else:
+        if row == 0:
+            return moves
+        
         if board[row - 1][col] == "":
             moves.append((row - 1, col))
 
@@ -199,5 +205,9 @@ while True:
                 if has_figure(current_player, row, col):
                     selection = [row, col]
                     suggestions = get_suggestions(row, col)
+        
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_TAB:
+                current_player = "black" if current_player == "white" else "white"
 
     pygame.display.update()
