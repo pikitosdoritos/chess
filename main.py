@@ -141,8 +141,8 @@ def get_suggestions(row, col):
     if figure in "Pp":
         if board[row + 1][col] == "":
             moves.append((row + 1, col))
-        if row == 1:
-            if board[row + 1][col] == "" and board[row + 2][col] == "" :
+            
+            if row == 1 and board[row + 2][col] == "":
                 moves.append((row + 2, col))
         
     return moves
