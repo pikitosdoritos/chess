@@ -8,8 +8,6 @@ PADDING = 50
 COLS = 8 
 ROWS = 8
 
-
-
 LIGHT_COLOR = (240, 217, 181)
 DARK_COLOR = (181, 136, 99)
 BG_COLOR = (30, 30, 30)
@@ -32,7 +30,7 @@ symbols = {
 
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-start_board = "111P1111/1Pp1p111/p1111111/11111111/11111111/11111111/111111P1/1111111p"
+start_board = "111P1111/1Pp1p111/p1P11111/11111111/P1111111/11111111/111111P1/1111111p"
 
 pygame.init()
 
@@ -135,15 +133,14 @@ def draw_selection(row, col):
 def get_pawn_moves(row, col, figure):
     moves = []
 
-
     if figure.isupper():
         if row == len(board) - 1:
             return moves
         
-        if board[row + 1][col - 1]:
+        if col > 0 and board[row + 1][col - 1].islower():
             moves.append((row + 1, col - 1))
 
-        if board[row + 1][col + 1]:
+        if col < 7 and board[row + 1][col + 1].islower():
             moves.append((row + 1, col + 1))
 
         if board[row + 1][col] == "":
@@ -155,6 +152,12 @@ def get_pawn_moves(row, col, figure):
     else:
         if row == 0:
             return moves
+        
+        if col > 0 and board[row - 1][col - 1].isupper():
+            moves.append((row - 1, col - 1))
+
+        if col < 7 and board[row - 1][col + 1].isupper():
+            moves.append((row - 1, col + 1))
         
         if board[row - 1][col] == "":
             moves.append((row - 1, col))
