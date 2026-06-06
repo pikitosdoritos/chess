@@ -30,7 +30,7 @@ symbols = {
         "k": "♚",
     }
 
-start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
+start_board = "RNBQKBNR/PPPPPPPP/P7/8/8/8/pppppppp/rnbqkbnr"
 
 pygame.init()
 
@@ -40,34 +40,25 @@ clock = pygame.time.Clock()
 
 pygame.display.set_caption("CHESS")
 
-def generate_clear_board():
+def generate_board(schema):
+    board_schema = schema.split("/")
+
     board = []
 
-    for row in range(ROWS):
+    for item in board_schema:
         squares = []
 
-        for col in range(COLS):
-            squares.append(" ")
+        for char in item:
+            if char.isdigit():
+                squares.extend([""] * int(char))
+            else:
+                squares.append(char)
 
         board.append(squares)
-
+    
     return board
 
-def generate_board(data):
-    for i, row in enumerate(data):
-        for j, item in enumerate(row):
-            if i == 0:
-                row[j] = start_board[j]
-            elif i == 1:
-                row[j] = "P"
-            elif i == 6:
-                row[j] = "p"
-            elif i == 7:
-                row[j] = start_board[(-1) + (-j)]
-            
-    return data
-
-def render_board(data, screen, selection):
+def render_board(data, screen, selection, suggestions):
     font = pygame.font.SysFont("segoeuisymbol", 70)
     board_rect = pygame.Rect(PADDING, PADDING, BOARD_SIZE, BOARD_SIZE)
 
@@ -140,7 +131,21 @@ def draw_selection(row, col):
     pygame.draw.rect(screen, (100, 150, 255), (x, y, SQUARE_SIZE, SQUARE_SIZE), 4)
 
 def get_suggestions(row, col):
-    pass
+    figure = board[row][col]
+
+    moves = []
+    
+    if not figure:
+        return
+
+    if figure in "Pp":
+        if board[row + 1][col] == "":
+            moves.append((row + 1, col))
+        if row == 1:
+            if board[row + 1][col] == "" and board[row + 2][col] == "" :
+                moves.append((row + 2, col))
+        
+    return moves
 
 def draw_suggestion(moves):
     for row, col in moves:
@@ -151,8 +156,7 @@ def draw_suggestion(moves):
         
         pygame.draw.circle(screen, (175, 205, 100), square_rect.center, 10)
 
-clear_board = generate_clear_board()
-board = generate_board(clear_board)
+board = generate_board(start_board)
 
 selection = [None, None]
 suggestions = []
@@ -163,7 +167,7 @@ while True:
     clock.tick(60)
 
     screen.fill(BG_COLOR)
-    render_board(board, screen, selection)
+    render_board(board, screen, selection, suggestions)
     
 
     for event in pygame.event.get():
