@@ -33,7 +33,7 @@ blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-start_board = "111P1111/1Pp1p1n1/p1P11111/1r111N11/P1111111/11111111/111111P1/1p11111p"
+start_board = "111P1111/1Pp1P1n1/p1P11111/1r111N11/P1111111/11111111/111111P1/1p11111p"
 
 pygame.init()
 
@@ -243,6 +243,9 @@ def get_knight_moves(row, col, figure):
 
     if row - 1 >= 0 and col - 2 >= 0 and ((figure in whites and board[row - 1][col - 2] not in whites) or (figure in blacks and board[row - 1][col - 2] not in blacks)): 
         moves.append((row - 1, col - 2))
+
+    if row + 1 >= 0 and col - 2 >= 0 and ((figure in whites and board[row + 1][col - 2] not in whites) or (figure in blacks and board[row + 1][col - 2] not in blacks)): 
+        moves.append((row + 1, col - 2))
 
     return moves
 
