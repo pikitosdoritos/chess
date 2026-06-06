@@ -28,9 +28,12 @@ symbols = {
         "k": "♚",
     }
 
+whites = ("R", "N", "B", "Q", "K", "P")
+blacks = ("r", "n", "b", "q", "k", "p")
+
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-start_board = "111P1111/1Pp1p111/p1P11111/1r111R11/P1111111/11111111/111111P1/1p11111p"
+start_board = "111P1111/1Pp1p1n1/p1P11111/1r111N11/P1111111/11111111/111111P1/1p11111p"
 
 pygame.init()
 
@@ -220,6 +223,28 @@ def get_rook_moves(row, col, figure):
 
     return moves
 
+def get_knight_moves(row, col, figure):
+    moves = []
+
+    if row + 2 < len(board) and col - 1 >= 0 and ((figure in whites and board[row + 2][col - 1] not in whites) or (figure in blacks and board[row + 2][col - 1] not in blacks)): 
+        moves.append((row + 2, col - 1))
+
+    if row + 2 < len(board) and col + 1 <= 7 and ((figure in whites and board[row + 2][col + 1] not in whites) or (figure in blacks and board[row + 2][col + 1] not in blacks)): 
+        moves.append((row + 2, col + 1))
+
+    if row - 2 >= 0 and col - 1 >= 0 and ((figure in whites and board[row - 2][col - 1] not in whites) or (figure in blacks and board[row - 2][col - 1] not in blacks)): 
+        moves.append((row - 2, col - 1))
+
+    if row - 2 >= 0 and col + 1 <= 7 and ((figure in whites and board[row - 2][col + 1] not in whites) or (figure in blacks and board[row - 2][col + 1] not in blacks)): 
+        moves.append((row - 2, col + 1))
+
+    if row - 1 >= 0 and col + 2 <= 7 and ((figure in whites and board[row - 1][col + 2] not in whites) or (figure in blacks and board[row - 1][col + 2] not in blacks)): 
+        moves.append((row - 1, col + 2))
+
+    
+
+    return moves
+
 def get_suggestions(row, col):
     figure = board[row][col]
     
@@ -231,6 +256,9 @@ def get_suggestions(row, col):
     
     if figure in "Rr":
         return get_rook_moves(row, col, figure)
+    
+    if figure in "Nn":
+        return get_knight_moves(row, col, figure)
     
     return []
         
