@@ -173,7 +173,7 @@ def get_rook_moves(row, col, figure):
     # down
     i = row + 1
 
-    while i <= len(board) - 1:
+    while i < len(board):
         if board[i][col] != "":
             break
 
@@ -199,6 +199,16 @@ def get_rook_moves(row, col, figure):
 
         moves.append((row, i))
         i -= 1
+
+    # right
+    i = col + 1
+
+    while i < 8:
+        if board[row][i] != "":
+            break
+
+        moves.append((row, i))
+        i += 1
 
     return moves
 
