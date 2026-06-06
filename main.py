@@ -30,7 +30,7 @@ symbols = {
 
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-start_board = "111P1111/1Pp1p111/p1P11111/11111111/P1111111/11111111/111111P1/1111111p"
+start_board = "111P1111/1Pp1p111/p1P11111/11111R11/P1111111/11111111/111111P1/1111111p"
 
 pygame.init()
 
@@ -167,6 +167,31 @@ def get_pawn_moves(row, col, figure):
             
     return moves 
 
+def get_rook_moves(row, col, figure):
+    moves = []
+
+    # down
+    i = row + 1
+
+    while i <= len(board) - 1:
+        if board[i][col] != "":
+            break
+
+        moves.append((i, col))
+        i += 1
+
+    # up
+    i = row - 1
+
+    while i >= 0:
+        if board[i][col] != "":
+            break
+
+        moves.append((i, col))
+        i -= 1
+
+    return moves
+
 def get_suggestions(row, col):
     figure = board[row][col]
     
@@ -175,6 +200,9 @@ def get_suggestions(row, col):
 
     if figure in "Pp":
         return get_pawn_moves(row, col, figure)
+    
+    if figure in "Rr":
+        return get_rook_moves(row, col, figure)
     
     return []
         
