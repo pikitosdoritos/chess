@@ -190,6 +190,16 @@ def get_rook_moves(row, col, figure):
         moves.append((i, col))
         i -= 1
 
+    # left
+    i = col - 1
+
+    while i >= 0:
+        if board[row][i] != "":
+            break
+
+        moves.append((row, i))
+        i -= 1
+
     return moves
 
 def get_suggestions(row, col):
