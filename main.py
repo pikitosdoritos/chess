@@ -130,23 +130,26 @@ def draw_selection(row, col):
     
     pygame.draw.rect(screen, (100, 150, 255), (x, y, SQUARE_SIZE, SQUARE_SIZE), 4)
 
+def get_pawn_moves(row, col):
+    moves = []
+
+    if board[row + 1][col] == "":
+        moves.append((row + 1, col))
+
+        if row == 1 and board[row + 2][col] == "":
+            moves.append((row + 2, col))
+        
+    return moves 
+
 def get_suggestions(row, col):
     figure = board[row][col]
-
-    moves = []
     
     if not figure:
         return
 
     if figure in "Pp":
-        if board[row + 1][col] == "":
-            moves.append((row + 1, col))
-            
-            if row == 1 and board[row + 2][col] == "":
-                moves.append((row + 2, col))
+        return get_pawn_moves(row, col)
         
-    return moves
-
 def draw_suggestion(moves):
     for row, col in moves:
         x = col * SQUARE_SIZE + PADDING
