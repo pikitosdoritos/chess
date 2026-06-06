@@ -133,6 +133,9 @@ def draw_selection(row, col):
 def get_pawn_moves(row, col, figure):
     moves = []
 
+    if row >= len(board) - 1:
+        return moves
+
     if figure.isupper():
         if board[row + 1][col] == "":
             moves.append((row + 1, col))
@@ -144,7 +147,7 @@ def get_pawn_moves(row, col, figure):
         if board[row - 1][col] == "":
             moves.append((row - 1, col))
 
-            if row == 6 and board[row - 2][col] == "":
+            if row == len(board) - 2 and board[row - 2][col] == "":
                 moves.append((row - 2, col))
             
     return moves 
