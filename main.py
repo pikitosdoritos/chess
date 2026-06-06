@@ -241,7 +241,8 @@ def get_knight_moves(row, col, figure):
     if row - 1 >= 0 and col + 2 <= 7 and ((figure in whites and board[row - 1][col + 2] not in whites) or (figure in blacks and board[row - 1][col + 2] not in blacks)): 
         moves.append((row - 1, col + 2))
 
-    
+    if row - 1 >= 0 and col - 2 >= 0 and ((figure in whites and board[row - 1][col - 2] not in whites) or (figure in blacks and board[row - 1][col - 2] not in blacks)): 
+        moves.append((row - 1, col - 2))
 
     return moves
 
