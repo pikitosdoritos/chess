@@ -30,7 +30,7 @@ symbols = {
 
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-start_board = "111P1111/1Pp1p111/p1P11111/11111R11/P1111111/11111111/111111P1/1111111p"
+start_board = "111P1111/1Pp1p111/p1P11111/1r111R11/P1111111/11111111/111111P1/1p11111p"
 
 pygame.init()
 
@@ -175,6 +175,8 @@ def get_rook_moves(row, col, figure):
 
     while i < len(board):
         if board[i][col] != "":
+            if (figure.isupper() and board[i][col].islower()) or (figure.islower() and board[i][col].isupper()):
+                moves.append((i, col))
             break
 
         moves.append((i, col))
@@ -185,6 +187,8 @@ def get_rook_moves(row, col, figure):
 
     while i >= 0:
         if board[i][col] != "":
+            if (figure.isupper() and board[i][col].islower()) or (figure.islower() and board[i][col].isupper()):
+                moves.append((i, col))
             break
 
         moves.append((i, col))
@@ -195,6 +199,8 @@ def get_rook_moves(row, col, figure):
 
     while i >= 0:
         if board[row][i] != "":
+            if (figure.isupper() and board[row][i].islower()) or (figure.islower() and board[row][i].isupper()):
+                moves.append((row, i))
             break
 
         moves.append((row, i))
@@ -205,6 +211,8 @@ def get_rook_moves(row, col, figure):
 
     while i < 8:
         if board[row][i] != "":
+            if (figure.isupper() and board[row][i].islower()) or (figure.islower() and board[row][i].isupper()):
+                moves.append((row, i))
             break
 
         moves.append((row, i))
