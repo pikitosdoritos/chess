@@ -32,7 +32,7 @@ symbols = {
 
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-start_board = "p11P1111/11111111/11111111/11111111/11111111/11111111/11111111/11111111"
+start_board = "111P1111/1Pp1p111/p1111111/11111111/11111111/11111111/111111P1/1111111p"
 
 pygame.init()
 
@@ -140,6 +140,12 @@ def get_pawn_moves(row, col, figure):
         if row == len(board) - 1:
             return moves
         
+        if board[row + 1][col - 1]:
+            moves.append((row + 1, col - 1))
+
+        if board[row + 1][col + 1]:
+            moves.append((row + 1, col + 1))
+
         if board[row + 1][col] == "":
             moves.append((row + 1, col))
 
