@@ -33,7 +33,7 @@ blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-start_board = "111P1111/1Pp1P1n1/p1P11111/1r11BN11/P1111111/11K11111/11Q1k1Pp/1p11111p"
+# start_board = "111P1111/1Pp1P1n1/p1P11111/1r11BN11/P1111111/11K11111/11Q1k1Pp/1p11111p"
 
 pygame.init()
 
@@ -61,7 +61,7 @@ def generate_board(schema):
     
     return board
 
-def render_board(data, screen, selection, suggestions):
+def render_board(data, screen):
     font = pygame.font.SysFont("segoeuisymbol", 70)
     board_rect = pygame.Rect(PADDING, PADDING, BOARD_SIZE, BOARD_SIZE)
 
@@ -85,7 +85,9 @@ def render_board(data, screen, selection, suggestions):
             board_surface.blit(figure_text, figure_rect)
 
     render_labels(screen)
-    draw_selection(*selection)
+
+    if selection: draw_selection(*selection)
+
     draw_suggestion(suggestions)
 
 def render_labels(surface):
@@ -228,7 +230,7 @@ def get_rook_moves(row, col, figure):
         moves.append((row, i))
 
         if not further: break
-        
+
         i += 1
 
     return moves
@@ -399,9 +401,22 @@ def draw_suggestion(moves):
         
         pygame.draw.circle(screen, (175, 205, 100), square_rect.center, 10)
 
+def make_move(row, col):
+    global selection, current_player, suggestions
+
+    r, c = selection
+
+    board[row][col] = board[r][c]
+    board[r][c] = ""
+
+    current_player = "black" if current_player == "white" else "white"
+
+    selection = None
+    suggestions = []
+
 board = generate_board(start_board)
 
-selection = [None, None]
+selection = None
 suggestions = []
 
 current_player = "white"
@@ -410,7 +425,7 @@ while True:
     clock.tick(60)
 
     screen.fill(BG_COLOR)
-    render_board(board, screen, selection, suggestions)
+    render_board(board, screen)
     
 
     for event in pygame.event.get():
@@ -423,8 +438,12 @@ while True:
             row = (mouse_y - PADDING) // SQUARE_SIZE
 
             if 0 <= row < ROWS and 0 <= col < COLS:
+                target = (row, col)
+
+                if selection and target in suggestions:
+                    make_move(*target)
                 if has_figure(current_player, row, col):
-                    selection = [row, col]
+                    selection = (row, col)
                     suggestions = get_suggestions(row, col)
         
         if event.type == pygame.KEYDOWN:
