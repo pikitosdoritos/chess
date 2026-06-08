@@ -276,6 +276,8 @@ def get_bishop_moves(row, col, figure):
 
     while i < len(board) and j >= 0:
         if board[i][j] != "":
+            if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
+                moves.append((i, j))
             break
     
         moves.append((i, j))
@@ -289,6 +291,8 @@ def get_bishop_moves(row, col, figure):
 
     while i >= 0 and j >= 0:
         if board[i][j] != "":
+            if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
+                moves.append((i, j))
             break
 
         moves.append((i, j))
@@ -302,6 +306,8 @@ def get_bishop_moves(row, col, figure):
 
     while i >= 0 and j < len(board):
         if board[i][j] != "":
+            if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
+                moves.append((i, j))
             break
 
         moves.append((i, j))
