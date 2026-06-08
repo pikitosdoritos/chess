@@ -141,7 +141,26 @@ def can_go(figure, row, col):
         board[row][col] == ""
     )
 
-def get_pawn_moves(row, col, figure):
+def get_line_moves(figure, row, col, r_shift, c_shift):
+    moves = []
+
+    i = row + r_shift
+    j = col + c_shift
+
+    while 0 <= i < len(board) and 0 <= j < len(board):
+        here, further = can_go(figure, i, j)
+        if not here: break
+
+        moves.append((i, j))
+
+        if not further or figure in "Kk": break
+
+        i += r_shift
+        j += c_shift
+    
+    return moves
+
+def get_pawn_moves(figure, row, col):
     moves = []
 
     if figure.isupper():
@@ -178,64 +197,15 @@ def get_pawn_moves(row, col, figure):
             
     return moves 
 
-def get_rook_moves(row, col, figure):
-    moves = []
-
-    # down
-    i = row + 1
-
-    while i < len(board):
-        here, further = can_go(figure, i, col)
-        if not here: break
-
-        moves.append((i, col))
-
-        if not further: break
-        
-        i += 1
-
-    # up
-    i = row - 1
-
-    while i >= 0:
-        here, further = can_go(figure, i, col)
-        if not here: break
-
-        moves.append((i, col))
-
-        if not further: break
-
-        i -= 1
-
-    # left
-    i = col - 1
-
-    while i >= 0:
-        here, further = can_go(figure, row, i)
-        if not here: break
-
-        moves.append((row, i))
-
-        if not further: break
-
-        i -= 1
-
-    # right
-    i = col + 1
-
-    while i < 8:
-        here, further = can_go(figure, row, i)
-        if not here: break
-
-        moves.append((row, i))
-
-        if not further: break
-
-        i += 1
-
-    return moves
-
-def get_knight_moves(row, col, figure):
+def get_rook_moves(figure, row, col):
+    return [
+        *get_line_moves(figure, row, col, 0, 1), 
+        *get_line_moves(figure, row, col, 1, 0), 
+        *get_line_moves(figure, row, col, 0, -1), 
+        *get_line_moves(figure, row, col, -1, 0),
+    ]
+    
+def get_knight_moves(figure, row, col):
     moves = []
 
     if row + 2 < len(board) and col - 1 >= 0 and ((figure in whites and board[row + 2][col - 1] not in whites) or (figure in blacks and board[row + 2][col - 1] not in blacks)): 
@@ -264,26 +234,7 @@ def get_knight_moves(row, col, figure):
 
     return moves
 
-def get_line_moves(figure, row, col, r_shift, c_shift):
-    moves = []
-
-    i = row + r_shift
-    j = col + c_shift
-
-    while 0 <= i < len(board) and 0 <= j < len(board):
-        here, further = can_go(figure, i, j)
-        if not here: break
-
-        moves.append((i, j))
-
-        if not further or figure in "Kk": break
-
-        i += r_shift
-        j += c_shift
-    
-    return moves
-
-def get_bishop_moves(row, col, figure):
+def get_bishop_moves(figure, row, col):
     return [
         *get_line_moves(figure, row, col, 1, 1), 
         *get_line_moves(figure, row, col, 1, -1), 
@@ -291,25 +242,11 @@ def get_bishop_moves(row, col, figure):
         *get_line_moves(figure, row, col, -1, -1), 
     ]
 
-def get_king_moves(row, col, figure):
+def get_royal_moves(figure, row, col):
     return [
-        *get_line_moves(figure, row, col, 1, 1), 
-        *get_line_moves(figure, row, col, 1, -1), 
-        *get_line_moves(figure, row, col, -1, 1), 
-        *get_line_moves(figure, row, col, -1, -1),
-        *get_line_moves(figure, row, col, 0, 1), 
-        *get_line_moves(figure, row, col, 1, 0), 
-        *get_line_moves(figure, row, col, 0, -1), 
-        *get_line_moves(figure, row, col, -1, 0),
+        *get_bishop_moves(figure, row, col),
+        *get_rook_moves(figure, row, col)
     ]
-
-def get_queen_moves(row, col, figure):
-    moves = []
-
-    moves.extend(get_bishop_moves(row, col, figure))
-    moves.extend(get_rook_moves(row, col, figure))
-
-    return moves
 
 def get_suggestions(row, col):
     figure = board[row][col]
@@ -318,22 +255,19 @@ def get_suggestions(row, col):
         return []
 
     if figure in "Pp":
-        return get_pawn_moves(row, col, figure)
+        return get_pawn_moves(figure, row, col)
     
     if figure in "Rr":
-        return get_rook_moves(row, col, figure)
+        return get_rook_moves(figure, row, col)
     
     if figure in "Nn":
-        return get_knight_moves(row, col, figure)
+        return get_knight_moves(figure, row, col)
     
     if figure in "Bb":
-        return get_bishop_moves(row, col, figure)
+        return get_bishop_moves(figure, row, col)
 
-    if figure in "Kk":
-        return get_king_moves(row, col, figure)
-
-    if figure in "Qq":
-        return get_queen_moves(row, col, figure)
+    if figure in "KkQq":
+        return get_royal_moves(figure, row, col)
     
     return []
         
