@@ -33,7 +33,7 @@ blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-start_board = "111P1111/1Pp1P1n1/p1P11111/1r11BN11/P1111111/11111111/111111Pp/1p11111p"
+start_board = "111P1111/1Pp1P1n1/p1P11111/1r11BN11/P1111111/1111K111/1111k1Pp/1p11111p"
 
 pygame.init()
 
@@ -317,6 +317,23 @@ def get_bishop_moves(row, col, figure):
 
     return moves
 
+def get_king_moves(row, col, figure):
+    moves = []
+
+    if board[row + 1][col] == "" or ((figure in whites and board[row + 1][col] not in whites) or (figure in blacks and board[row + 1][col] not in blacks)):
+        moves.append((row + 1, col))
+    
+    if board[row + 1][col - 1] == "" or ((figure in whites and board[row + 1][col - 1] not in whites) or (figure in blacks and board[row + 1][col - 1] not in blacks)):
+        moves.append((row + 1, col - 1))
+
+    if board[row][col - 1] == "" or ((figure in whites and board[row][col - 1] not in whites) or (figure in blacks and board[row][col - 1] not in blacks)):
+        moves.append((row, col - 1))
+
+    if board[row - 1][col - 1] == "" or ((figure in whites and board[row - 1][col - 1] not in whites) or (figure in blacks and board[row - 1][col - 1] not in blacks)):
+        moves.append((row - 1, col - 1))
+
+    return moves
+
 def get_suggestions(row, col):
     figure = board[row][col]
     
@@ -334,6 +351,9 @@ def get_suggestions(row, col):
     
     if figure in "Bb":
         return get_bishop_moves(row, col, figure)
+
+    if figure in "Kk":
+        return get_king_moves(row, col, figure)
 
     return []
         
