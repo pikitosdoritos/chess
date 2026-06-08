@@ -338,6 +338,12 @@ def get_king_moves(row, col, figure):
     if (figure in whites and board[row - 1][col + 1] not in whites) or (figure in blacks and board[row - 1][col + 1] not in blacks):
         moves.append((row - 1, col + 1))
 
+    if (figure in whites and board[row][col + 1] not in whites) or (figure in blacks and board[row][col + 1] not in blacks):
+        moves.append((row, col + 1))
+
+    if (figure in whites and board[row + 1][col + 1] not in whites) or (figure in blacks and board[row + 1][col + 1] not in blacks):
+        moves.append((row + 1, col + 1))
+
     return moves
 
 def get_suggestions(row, col):
