@@ -33,7 +33,7 @@ blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-start_board = "111P1111/1Pp1P1n1/p1P11111/1r111N11/P1111111/11111111/111111P1/1p11111p"
+start_board = "111P1111/1Pp1P1n1/p1P11111/1r11BN11/P1111111/11111111/111111P1/1p11111p"
 
 pygame.init()
 
@@ -252,6 +252,50 @@ def get_knight_moves(row, col, figure):
 
     return moves
 
+def get_bishop_moves(row, col, figure):
+    moves = []
+
+    # right + down
+    i = row + 1
+    j = col + 1
+
+    while i < len(board) and j < len(board):
+        if board[i][j] != "":
+            break
+
+        moves.append((i, j))
+
+        i += 1
+        j += 1
+
+    # left + down
+    i = row + 1
+    j = col - 1
+
+    while i < len(board) and j >= 0:
+        if board[i][j] != "":
+            break
+    
+        moves.append((i, j))
+
+        i += 1
+        j -= 1
+    
+    # left + up
+    i = row - 1
+    j = col - 1
+
+    while i >= 0 and j >= 0:
+        if board[i][j] != "":
+            break
+
+        moves.append((i, j))
+
+        i -= 1
+        j -= 1
+
+    return moves
+
 def get_suggestions(row, col):
     figure = board[row][col]
     
@@ -267,6 +311,9 @@ def get_suggestions(row, col):
     if figure in "Nn":
         return get_knight_moves(row, col, figure)
     
+    if figure in "Bb":
+        return get_bishop_moves(row, col, figure)
+
     return []
         
 def draw_suggestion(moves):
