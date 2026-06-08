@@ -133,6 +133,12 @@ def draw_selection(row, col):
     
     pygame.draw.rect(screen, (100, 150, 255), (x, y, SQUARE_SIZE, SQUARE_SIZE), 4)
 
+def can_go(figure, row, col):
+    return (
+        (figure in whites and board[row][col] not in whites) or (figure in blacks and board[row][col] not in blacks), 
+        board[row][col] == ""
+    )
+
 def get_pawn_moves(row, col, figure):
     moves = []
 
@@ -260,12 +266,12 @@ def get_bishop_moves(row, col, figure):
     j = col + 1
 
     while i < len(board) and j < len(board):
-        if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
-            moves.append((i, j))
+        here, further = can_go(figure, i, j)
+        if not here: break
 
-            if board[i][j]: break
-        
-        else: break
+        moves.append((i, j))
+
+        if not further: break
 
         i += 1
         j += 1
@@ -275,12 +281,12 @@ def get_bishop_moves(row, col, figure):
     j = col - 1
 
     while i < len(board) and j >= 0:
-        if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
-            moves.append((i, j))
+        here, further = can_go(figure, i, j)
+        if not here: break
 
-            if board[i][j]: break
+        moves.append((i, j))
 
-        else: break
+        if not further: break
 
         i += 1
         j -= 1
@@ -290,12 +296,12 @@ def get_bishop_moves(row, col, figure):
     j = col - 1
 
     while i >= 0 and j >= 0:
-        if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
-            moves.append((i, j))
+        here, further = can_go(figure, i, j)
+        if not here: break
 
-            if board[i][j]: break
+        moves.append((i, j))
 
-        else: break
+        if not further: break
 
         i -= 1
         j -= 1
@@ -305,13 +311,13 @@ def get_bishop_moves(row, col, figure):
     j = col + 1
 
     while i >= 0 and j < len(board):
-        if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
-            moves.append((i, j))
-            
-            if board[i][j]: break
+        here, further = can_go(figure, i, j)
+        if not here: break
 
-        else: break
-        
+        moves.append((i, j))
+
+        if not further: break
+
         i -= 1
         j += 1
 
