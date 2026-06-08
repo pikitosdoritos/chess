@@ -153,7 +153,7 @@ def get_line_moves(figure, row, col, r_shift, c_shift):
 
         moves.append((i, j))
 
-        if not further or figure in "Kk": break
+        if not further or figure in "KkNn": break
 
         i += r_shift
         j += c_shift
@@ -206,33 +206,16 @@ def get_rook_moves(figure, row, col):
     ]
     
 def get_knight_moves(figure, row, col):
-    moves = []
-
-    if row + 2 < len(board) and col - 1 >= 0 and ((figure in whites and board[row + 2][col - 1] not in whites) or (figure in blacks and board[row + 2][col - 1] not in blacks)): 
-        moves.append((row + 2, col - 1))
-
-    if row + 2 < len(board) and col + 1 <= 7 and ((figure in whites and board[row + 2][col + 1] not in whites) or (figure in blacks and board[row + 2][col + 1] not in blacks)): 
-        moves.append((row + 2, col + 1))
-
-    if row - 2 >= 0 and col - 1 >= 0 and ((figure in whites and board[row - 2][col - 1] not in whites) or (figure in blacks and board[row - 2][col - 1] not in blacks)): 
-        moves.append((row - 2, col - 1))
-
-    if row - 2 >= 0 and col + 1 <= 7 and ((figure in whites and board[row - 2][col + 1] not in whites) or (figure in blacks and board[row - 2][col + 1] not in blacks)): 
-        moves.append((row - 2, col + 1))
-
-    if row - 1 >= 0 and col + 2 <= 7 and ((figure in whites and board[row - 1][col + 2] not in whites) or (figure in blacks and board[row - 1][col + 2] not in blacks)): 
-        moves.append((row - 1, col + 2))
-
-    if row - 1 >= 0 and col - 2 >= 0 and ((figure in whites and board[row - 1][col - 2] not in whites) or (figure in blacks and board[row - 1][col - 2] not in blacks)): 
-        moves.append((row - 1, col - 2))
-
-    if row + 1 >= 0 and col - 2 >= 0 and ((figure in whites and board[row + 1][col - 2] not in whites) or (figure in blacks and board[row + 1][col - 2] not in blacks)): 
-        moves.append((row + 1, col - 2))
-
-    if row + 1 >= 0 and col + 2 <= 7 and ((figure in whites and board[row + 1][col + 2] not in whites) or (figure in blacks and board[row + 1][col + 2] not in blacks)): 
-        moves.append((row + 1, col + 2))
-
-    return moves
+    return [
+        *get_line_moves(figure, row, col, 1, 2),
+        *get_line_moves(figure, row, col, 2, 1),
+        *get_line_moves(figure, row, col, 2, -1),
+        *get_line_moves(figure, row, col, 1, -2),
+        *get_line_moves(figure, row, col, -1, -2),
+        *get_line_moves(figure, row, col, -2, -1),
+        *get_line_moves(figure, row, col, -2, 1),
+        *get_line_moves(figure, row, col, -1, 2),
+    ]
 
 def get_bishop_moves(figure, row, col):
     return [
