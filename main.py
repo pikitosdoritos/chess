@@ -33,7 +33,7 @@ blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-start_board = "111P1111/1Pp1P1n1/p1P11111/1r11BN11/P1111111/1111K111/1111k1Pp/1p11111p"
+start_board = "111P1111/1Pp1P1n1/p1P11111/1r11BN11/P1111111/111K1111/11Q1k1Pp/1p11111p"
 
 pygame.init()
 
@@ -342,6 +342,38 @@ def get_king_moves(row, col, figure):
 
     return moves
 
+def get_queen_moves(row, col, figure):
+    moves = []
+
+    # right
+    i =  row
+    j = col + 1
+
+    while j < len(board):
+        if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
+            moves.append((i, j))
+
+            if board[i][j]:
+                break
+        
+        j += 1
+
+    # right + down
+    i = row + 1
+    j = col + 1
+
+    while i < len(board) and j < len(board):
+        if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
+            moves.append((i, j))
+
+            if board[i][j]:
+                break
+        
+        i += 1
+        j += 1
+
+    return moves
+
 def get_suggestions(row, col):
     figure = board[row][col]
     
@@ -363,6 +395,9 @@ def get_suggestions(row, col):
     if figure in "Kk":
         return get_king_moves(row, col, figure)
 
+    if figure in "Qq":
+        return get_queen_moves(row, col, figure)
+    
     return []
         
 def draw_suggestion(moves):
