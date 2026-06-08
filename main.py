@@ -264,14 +264,13 @@ def get_knight_moves(row, col, figure):
 
     return moves
 
-def get_bishop_moves(row, col, figure):
+def get_line_moves(figure, row, col, r_shift, c_shift):
     moves = []
 
-    # right + down
-    i = row + 1
-    j = col + 1
+    i = row + r_shift
+    j = col + c_shift
 
-    while i < len(board) and j < len(board):
+    while 0 <= i < len(board) and 0 <= j < len(board):
         here, further = can_go(figure, i, j)
         if not here: break
 
@@ -279,55 +278,18 @@ def get_bishop_moves(row, col, figure):
 
         if not further: break
 
-        i += 1
-        j += 1
-
-    # left + down
-    i = row + 1
-    j = col - 1
-
-    while i < len(board) and j >= 0:
-        here, further = can_go(figure, i, j)
-        if not here: break
-
-        moves.append((i, j))
-
-        if not further: break
-
-        i += 1
-        j -= 1
+        i += r_shift
+        j += c_shift
     
-    # left + up
-    i = row - 1
-    j = col - 1
-
-    while i >= 0 and j >= 0:
-        here, further = can_go(figure, i, j)
-        if not here: break
-
-        moves.append((i, j))
-
-        if not further: break
-
-        i -= 1
-        j -= 1
-
-    # right + up
-    i = row - 1
-    j = col + 1
-
-    while i >= 0 and j < len(board):
-        here, further = can_go(figure, i, j)
-        if not here: break
-
-        moves.append((i, j))
-
-        if not further: break
-
-        i -= 1
-        j += 1
-
     return moves
+
+def get_bishop_moves(row, col, figure):
+    return [
+        *get_line_moves(figure, row, col, 1, 1), 
+        *get_line_moves(figure, row, col, 1, -1), 
+        *get_line_moves(figure, row, col, -1, 1), 
+        *get_line_moves(figure, row, col, -1, -1), 
+    ]
 
 def get_king_moves(row, col, figure):
     moves = []
