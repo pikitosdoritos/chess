@@ -276,7 +276,7 @@ def get_line_moves(figure, row, col, r_shift, c_shift):
 
         moves.append((i, j))
 
-        if not further: break
+        if not further or figure in "Kk": break
 
         i += r_shift
         j += c_shift
@@ -292,33 +292,16 @@ def get_bishop_moves(row, col, figure):
     ]
 
 def get_king_moves(row, col, figure):
-    moves = []
-
-    if (figure in whites and board[row + 1][col] not in whites) or (figure in blacks and board[row + 1][col] not in blacks):
-        moves.append((row + 1, col))
-    
-    if (figure in whites and board[row + 1][col - 1] not in whites) or (figure in blacks and board[row + 1][col - 1] not in blacks):
-        moves.append((row + 1, col - 1))
-
-    if (figure in whites and board[row][col - 1] not in whites) or (figure in blacks and board[row][col - 1] not in blacks):
-        moves.append((row, col - 1))
-
-    if (figure in whites and board[row - 1][col - 1] not in whites) or (figure in blacks and board[row - 1][col - 1] not in blacks):
-        moves.append((row - 1, col - 1))
-
-    if (figure in whites and board[row - 1][col] not in whites) or (figure in blacks and board[row - 1][col] not in blacks):
-        moves.append((row - 1, col))
-
-    if (figure in whites and board[row - 1][col + 1] not in whites) or (figure in blacks and board[row - 1][col + 1] not in blacks):
-        moves.append((row - 1, col + 1))
-
-    if (figure in whites and board[row][col + 1] not in whites) or (figure in blacks and board[row][col + 1] not in blacks):
-        moves.append((row, col + 1))
-
-    if (figure in whites and board[row + 1][col + 1] not in whites) or (figure in blacks and board[row + 1][col + 1] not in blacks):
-        moves.append((row + 1, col + 1))
-
-    return moves
+    return [
+        *get_line_moves(figure, row, col, 1, 1), 
+        *get_line_moves(figure, row, col, 1, -1), 
+        *get_line_moves(figure, row, col, -1, 1), 
+        *get_line_moves(figure, row, col, -1, -1),
+        *get_line_moves(figure, row, col, 0, 1), 
+        *get_line_moves(figure, row, col, 1, 0), 
+        *get_line_moves(figure, row, col, 0, -1), 
+        *get_line_moves(figure, row, col, -1, 0),
+    ]
 
 def get_queen_moves(row, col, figure):
     moves = []
