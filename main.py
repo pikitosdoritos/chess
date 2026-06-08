@@ -260,12 +260,11 @@ def get_bishop_moves(row, col, figure):
     j = col + 1
 
     while i < len(board) and j < len(board):
-        if board[i][j] != "":
-            if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
-                moves.append((i, j))
-            break
+        if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
+            moves.append((i, j))
 
-        moves.append((i, j))
+            if board[i][j]:
+                break
 
         i += 1
         j += 1
@@ -275,12 +274,11 @@ def get_bishop_moves(row, col, figure):
     j = col - 1
 
     while i < len(board) and j >= 0:
-        if board[i][j] != "":
-            if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
-                moves.append((i, j))
-            break
-    
-        moves.append((i, j))
+        if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
+            moves.append((i, j))
+
+            if board[i][j]:
+                break
 
         i += 1
         j -= 1
@@ -290,12 +288,11 @@ def get_bishop_moves(row, col, figure):
     j = col - 1
 
     while i >= 0 and j >= 0:
-        if board[i][j] != "":
-            if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
-                moves.append((i, j))
-            break
+        if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
+            moves.append((i, j))
 
-        moves.append((i, j))
+            if board[i][j]:
+                break
 
         i -= 1
         j -= 1
@@ -305,12 +302,11 @@ def get_bishop_moves(row, col, figure):
     j = col + 1
 
     while i >= 0 and j < len(board):
-        if board[i][j] != "":
-            if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
-                moves.append((i, j))
-            break
-
-        moves.append((i, j))
+        if (figure in whites and board[i][j] not in whites) or (figure in blacks and board[i][j] not in blacks):
+            moves.append((i, j))
+            
+            if board[i][j]:
+                break
 
         i -= 1
         j += 1
