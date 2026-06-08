@@ -183,48 +183,52 @@ def get_rook_moves(row, col, figure):
     i = row + 1
 
     while i < len(board):
-        if board[i][col] != "":
-            if (figure.isupper() and board[i][col].islower()) or (figure.islower() and board[i][col].isupper()):
-                moves.append((i, col))
-            break
+        here, further = can_go(figure, i, col)
+        if not here: break
 
         moves.append((i, col))
+
+        if not further: break
+        
         i += 1
 
     # up
     i = row - 1
 
     while i >= 0:
-        if board[i][col] != "":
-            if (figure.isupper() and board[i][col].islower()) or (figure.islower() and board[i][col].isupper()):
-                moves.append((i, col))
-            break
+        here, further = can_go(figure, i, col)
+        if not here: break
 
         moves.append((i, col))
+
+        if not further: break
+
         i -= 1
 
     # left
     i = col - 1
 
     while i >= 0:
-        if board[row][i] != "":
-            if (figure.isupper() and board[row][i].islower()) or (figure.islower() and board[row][i].isupper()):
-                moves.append((row, i))
-            break
+        here, further = can_go(figure, row, i)
+        if not here: break
 
         moves.append((row, i))
+
+        if not further: break
+
         i -= 1
 
     # right
     i = col + 1
 
     while i < 8:
-        if board[row][i] != "":
-            if (figure.isupper() and board[row][i].islower()) or (figure.islower() and board[row][i].isupper()):
-                moves.append((row, i))
-            break
+        here, further = can_go(figure, row, i)
+        if not here: break
 
         moves.append((row, i))
+
+        if not further: break
+        
         i += 1
 
     return moves
