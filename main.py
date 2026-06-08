@@ -153,7 +153,7 @@ def get_line_moves(figure, row, col, r_shift, c_shift):
 
         moves.append((i, j))
 
-        if not further or figure in "KkNn": break
+        if not further or figure in "KkNnPp": break
 
         i += r_shift
         j += c_shift
@@ -161,41 +161,19 @@ def get_line_moves(figure, row, col, r_shift, c_shift):
     return moves
 
 def get_pawn_moves(figure, row, col):
-    moves = []
+    r_shift = 1 if figure in whites else - 1
 
-    if figure.isupper():
-        if row == len(board) - 1:
-            return moves
-        
-        if col > 0 and board[row + 1][col - 1].islower():
-            moves.append((row + 1, col - 1))
+    moves = get_line_moves(figure, row, col, r_shift, 0)
 
-        if col < 7 and board[row + 1][col + 1].islower():
-            moves.append((row + 1, col + 1))
+    if moves and (row == 1 or row == 6): moves.extend(get_line_moves(figure, row, col, r_shift * 2, 0))
 
-        if board[row + 1][col] == "":
-            moves.append((row + 1, col))
+    here, further = can_go(figure, row + r_shift, col - 1)
+    if (here and not further): moves.append((row + r_shift, col - 1))
 
-            if row == 1 and board[row + 2][col] == "":
-                moves.append((row + 2, col))
+    here, further = can_go(figure, row + r_shift, col + 1)
+    if (here and not further): moves.append((row + r_shift, col + 1))
 
-    else:
-        if row == 0:
-            return moves
-        
-        if col > 0 and board[row - 1][col - 1].isupper():
-            moves.append((row - 1, col - 1))
-
-        if col < 7 and board[row - 1][col + 1].isupper():
-            moves.append((row - 1, col + 1))
-        
-        if board[row - 1][col] == "":
-            moves.append((row - 1, col))
-
-            if row == len(board) - 2 and board[row - 2][col] == "":
-                moves.append((row - 2, col))
-            
-    return moves 
+    return moves
 
 def get_rook_moves(figure, row, col):
     return [
