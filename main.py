@@ -33,7 +33,7 @@ blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-# start_board = "111P1111/1Pp1P1n1/p1P11111/1r11BN11/P1111111/11K11111/11Q1k1Pp/1p11111p"
+start_board = "111P1111/1P11P111/11P11111/11p1BN11/P1111111/11K11111/11Q111P1/1p111111"
 
 pygame.init()
 
@@ -135,11 +135,40 @@ def draw_selection(row, col):
     
     pygame.draw.rect(screen, (100, 150, 255), (x, y, SQUARE_SIZE, SQUARE_SIZE), 4)
 
+def get_figures(color):
+    colored = whites if color == "white" else blacks
+    figures = []
+
+    for row in range(ROWS):
+        for col in range(COLS):
+            if board[row][col] in colored:
+                figures.append((row, col))
+
+    return figures
+
 def can_go(figure, row, col):
+    if (col > 7 or col < 0) or (row > 7 or row < 0):
+        return (False, False)
+    
     return (
         (figure in whites and board[row][col] not in whites) or (figure in blacks and board[row][col] not in blacks), 
         board[row][col] == ""
     )
+
+def is_safe(row, col, enemies):
+    safe = True
+
+    figure = board[row][col]
+    board[row][col] = "P"
+
+    for enemy in enemies:
+        if (row, col) in get_moves(*enemy, False):
+            safe = False
+            break
+
+    board[row][col] = figure
+
+    return safe
 
 def get_line_moves(figure, row, col, r_shift, c_shift):
     moves = []
@@ -163,9 +192,14 @@ def get_line_moves(figure, row, col, r_shift, c_shift):
 def get_pawn_moves(figure, row, col):
     r_shift = 1 if figure in whites else - 1
 
-    moves = get_line_moves(figure, row, col, r_shift, 0)
+    moves = []
 
-    if moves and (row == 1 or row == 6): moves.extend(get_line_moves(figure, row, col, r_shift * 2, 0))
+    here, further = can_go(figure, row + r_shift, col)
+    if here and further: moves.append((row + r_shift, col))
+
+    if moves and (row == 1 or row == 6): 
+        here, further = can_go(figure, row + r_shift * 2, col)
+        if here and further: moves.append((row + r_shift * 2, col))
 
     here, further = can_go(figure, row + r_shift, col - 1)
     if (here and not further): moves.append((row + r_shift, col - 1))
@@ -203,13 +237,20 @@ def get_bishop_moves(figure, row, col):
         *get_line_moves(figure, row, col, -1, -1), 
     ]
 
-def get_royal_moves(figure, row, col):
-    return [
+def get_royal_moves(figure, row, col, real=True):
+    moves = [
         *get_bishop_moves(figure, row, col),
         *get_rook_moves(figure, row, col)
     ]
 
-def get_suggestions(row, col):
+    if figure in "Kk" and real: 
+        color = "black" if figure in whites else "white"
+        enemies = get_figures(color)
+        moves = list(filter(lambda move: is_safe(*move, enemies), moves))
+
+    return moves
+
+def get_moves(row, col, real=True):
     figure = board[row][col]
     
     if not figure:
@@ -228,7 +269,7 @@ def get_suggestions(row, col):
         return get_bishop_moves(figure, row, col)
 
     if figure in "KkQq":
-        return get_royal_moves(figure, row, col)
+        return get_royal_moves(figure, row, col, real)
     
     return []
         
@@ -284,7 +325,7 @@ while True:
                     make_move(*target)
                 if has_figure(current_player, row, col):
                     selection = (row, col)
-                    suggestions = get_suggestions(row, col)
+                    suggestions = get_moves(row, col)
         
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_TAB:
