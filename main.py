@@ -33,7 +33,7 @@ blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
 
-start_board = "111P1111/1P11P111/11P11111/11p1BN11/P1111111/11K11111/11Q111P1/1p111111"
+# start_board = "111P1111/1P11P111/11P11111/1rp1BN11/P1111111/11K11111/11Q111P1/1p111111"
 
 pygame.init()
 
