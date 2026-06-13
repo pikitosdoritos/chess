@@ -12,6 +12,11 @@ LIGHT_COLOR = (240, 217, 181)
 DARK_COLOR = (181, 136, 99)
 BG_COLOR = (30, 30, 30)
 
+START_POSITIONS = [
+    (0, 0), (0, 3), (0, 7),
+    (7, 0), (7, 3), (7, 7)
+]
+
 symbols = {
         "P": "♙",
         "R": "♖",
@@ -31,7 +36,8 @@ symbols = {
 whites = ("R", "N", "B", "Q", "K", "P")
 blacks = ("r", "n", "b", "q", "k", "p")
 
-start_board = "RNBQKBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbqkbnr"
+start_board = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr"
+start_board = "R11K111R/PPPPPPPP/8/8/8/8/pppppppp/r11k111r"
 
 # start_board = "111P1111/1P11P111/11P11111/1rp1BN11/P1111111/11K11111/11Q111P1/1p111111"
 
@@ -250,6 +256,21 @@ def get_royal_moves(figure, row, col, real=True):
 
     return moves
 
+def get_king_moves(figure, row, col, real=True):
+    moves = get_royal_moves(figure, row, col, real)
+
+    if (row, col) in START_POSITIONS:
+        color = "black" if figure in whites else "white"
+        enemies = get_figures(color)
+
+        if (row, 0) in START_POSITIONS and (row, 2) in moves and not board[row][1] and is_safe(row, 1, enemies):
+            moves.append((row, 1))
+
+        if (row, 7) in START_POSITIONS and (row, 4) in moves and not (board[row][6] or board[row][5]) and is_safe(row, 5, enemies):
+            moves.append((row, 5))
+
+    return moves
+
 def get_moves(row, col, real=True):
     figure = board[row][col]
     
@@ -268,8 +289,11 @@ def get_moves(row, col, real=True):
     if figure in "Bb":
         return get_bishop_moves(figure, row, col)
 
-    if figure in "KkQq":
-        return get_royal_moves(figure, row, col, real)
+    if figure in "Qq":
+        return get_royal_moves(figure, row, col)
+    
+    if figure in "Kk":
+        return get_king_moves(figure, row, col, real)
     
     return []
         
