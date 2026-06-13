@@ -12,7 +12,7 @@ LIGHT_COLOR = (240, 217, 181)
 DARK_COLOR = (181, 136, 99)
 BG_COLOR = (30, 30, 30)
 
-START_POSITIONS = [
+start_positions = [
     (0, 0), (0, 3), (0, 7),
     (7, 0), (7, 3), (7, 7)
 ]
@@ -37,7 +37,7 @@ whites = ("R", "N", "B", "Q", "K", "P")
 blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr"
-start_board = "R11K111R/PPPPPPPP/8/8/8/8/pppppppp/r11k111r"
+start_board = "R11K111R/PPPrPPPP/8/8/8/8/pppRpppp/r11k111r"
 
 # start_board = "111P1111/1P11P111/11P11111/1rp1BN11/P1111111/11K11111/11Q111P1/1p111111"
 
@@ -165,7 +165,7 @@ def is_safe(row, col, enemies):
     safe = True
 
     figure = board[row][col]
-    board[row][col] = "P"
+    board[row][col] = "*"
 
     for enemy in enemies:
         if (row, col) in get_moves(*enemy, False):
@@ -259,14 +259,14 @@ def get_royal_moves(figure, row, col, real=True):
 def get_king_moves(figure, row, col, real=True):
     moves = get_royal_moves(figure, row, col, real)
 
-    if (row, col) in START_POSITIONS:
+    if (row, col) in start_positions:
         color = "black" if figure in whites else "white"
         enemies = get_figures(color)
 
-        if (row, 0) in START_POSITIONS and (row, 2) in moves and not board[row][1] and is_safe(row, 1, enemies):
+        if (row, 0) in start_positions and (row, 2) in moves and not board[row][1] and is_safe(row, 1, enemies):
             moves.append((row, 1))
 
-        if (row, 7) in START_POSITIONS and (row, 4) in moves and not (board[row][6] or board[row][5]) and is_safe(row, 5, enemies):
+        if (row, 7) in start_positions and (row, 4) in moves and not (board[row][6] or board[row][5]) and is_safe(row, 5, enemies):
             moves.append((row, 5))
 
     return moves
@@ -310,6 +310,19 @@ def make_move(row, col):
     global selection, current_player, suggestions
 
     r, c = selection
+
+    if board[r][c] in "Kk":
+        if (r, c) in start_positions: start_positions.remove((r, c))
+
+        if c - col == 2:
+            board[row][c - 1] = board[row][0]
+            board[row][0] = ""
+            start_positions.remove((row, 0))
+
+        if col - c == 2:
+            board[row][c + 1] = board[row][7]
+            board[row][7] = ""
+            start_positions.remove((row, 7))
 
     board[row][col] = board[r][c]
     board[r][c] = ""
