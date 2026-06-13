@@ -311,7 +311,10 @@ def make_move(row, col):
 
     r, c = selection
 
-    if board[r][c] in "Kk":
+    if board[r][c] in "Rr":
+        if (r, c) in start_positions: start_positions.remove((r, c))
+
+    elif board[r][c] in "Kk":
         if (r, c) in start_positions: start_positions.remove((r, c))
 
         if c - col == 2:
@@ -319,7 +322,7 @@ def make_move(row, col):
             board[row][0] = ""
             start_positions.remove((row, 0))
 
-        if col - c == 2:
+        elif col - c == 2:
             board[row][c + 1] = board[row][7]
             board[row][7] = ""
             start_positions.remove((row, 7))
