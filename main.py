@@ -11,6 +11,7 @@ ROWS = 8
 LIGHT_COLOR = (240, 217, 181)
 DARK_COLOR = (181, 136, 99)
 BG_COLOR = (30, 30, 30)
+CHOICE_COLOR = (211, 177, 140)
 
 start_positions = [
     (0, 0), (0, 3), (0, 7),
@@ -122,6 +123,53 @@ def render_labels(surface):
     surface.blit(h_surface, (PADDING, PADDING + BOARD_SIZE))
     surface.blit(v_surface, (0, PADDING))
     surface.blit(v_surface, (PADDING + BOARD_SIZE, PADDING))
+
+def render_choices(surface, color):
+    font = pygame.font.SysFont("segoeuisymbol", 70)
+
+    figures = "nbrq"
+
+    if color == "white": figures = figures.upper()
+
+    choice_width = len(figures) * SQUARE_SIZE
+    choice_height = SQUARE_SIZE
+
+    choice_surface = pygame.Surface((choice_width, choice_height))
+    choice_surface.fill(CHOICE_COLOR)
+
+    for i, figure in enumerate(figures):
+        symbol = symbols.get(figure)
+
+        figure_text = font.render(symbol, True, (0, 0, 0))
+
+        cell_rect = pygame.Rect(i * SQUARE_SIZE, 0, SQUARE_SIZE, SQUARE_SIZE)
+
+        pygame.draw.rect(
+            choice_surface,
+            (90, 60, 35),
+            cell_rect,
+            2
+        )
+
+        figure_rect = figure_text.get_rect(center=cell_rect.center)
+
+        choice_rect = choice_surface.get_rect(
+        center=surface.get_rect().center
+    )
+        
+        pygame.draw.rect(
+        choice_surface,
+        (40, 30, 20),
+        choice_surface.get_rect(),
+        4
+    )
+
+        choice_surface.blit(figure_text, figure_rect)
+
+    x = (surface.get_width() - choice_width) // 2
+    y = (surface.get_height() - choice_height) // 2
+
+    surface.blit(choice_surface, (x, y))
 
 def has_figure(color, row, col):
     if color == "white":
@@ -345,6 +393,7 @@ while True:
     screen.fill(BG_COLOR)
     render_board(board, screen)
     
+    render_choices(screen, "white")
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
