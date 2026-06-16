@@ -38,6 +38,8 @@ whites = ("R", "N", "B", "Q", "K", "P")
 blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr"
+start_board = "1NBKQBNR/pPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr"
+
  
 pygame.init()
 
@@ -352,7 +354,7 @@ def draw_suggestion(moves):
         pygame.draw.circle(screen, (175, 205, 100), square_rect.center, 10)
 
 def make_move(row, col):
-    global selection, current_player, suggestions
+    global selection, current_player, suggestions, choice
 
     r, c = selection
 
@@ -375,10 +377,29 @@ def make_move(row, col):
     board[row][col] = board[r][c]
     board[r][c] = ""
 
-    current_player = "black" if current_player == "white" else "white"
-
-    selection = None
     suggestions = []
+
+    if board[row][col] in "Pp" and (row == 0 or row == 7):
+        choice = True
+        return
+
+    current_player = "black" if current_player == "white" else "white"
+    selection = None
+
+def choose_figure(col):
+    global current_player, choice, selection
+
+    figure = "nbrq"[col]
+    
+    if current_player == "white": figure = figure.upper()
+
+    r, c = selection
+
+    board[r][c] = figure
+
+    current_player = "black" if current_player == "white" else "white"
+    selection = None
+    choice = False
 
 board = generate_board(start_board)
 
@@ -387,22 +408,39 @@ suggestions = []
 
 current_player = "white"
 
+choice = False
+
 while True:
     clock.tick(60)
 
     screen.fill(BG_COLOR)
     render_board(board, screen)
     
-    render_choices(screen, "white")
+    if choice:
+        render_choices(screen, current_player)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
             mouse_x, mouse_y = event.pos
-            col = (mouse_x - PADDING) // SQUARE_SIZE
+            
+
+            if choice:
+                start_x = (screen.get_width() - 4 * SQUARE_SIZE) // 2
+                start_y = (screen.get_height() - SQUARE_SIZE) // 2
+
+                row = (mouse_y - start_y) // SQUARE_SIZE
+                col = (mouse_x - start_x) // SQUARE_SIZE
+
+                if row == 0 and 0 <= col < 4:
+                    choose_figure(col)
+
+                break
+
             row = (mouse_y - PADDING) // SQUARE_SIZE
+            col = (mouse_x - PADDING) // SQUARE_SIZE
 
             if 0 <= row < ROWS and 0 <= col < COLS:
                 target = (row, col)
