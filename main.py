@@ -208,14 +208,14 @@ def can_go(figure, row, col):
         board[row][col] == ""
     )
 
-def is_safe(row, col, enemies):
+def is_safe(row, col, enemies, board):
     safe = True
 
     figure = board[row][col]
     board[row][col] = "*"
 
     for enemy in enemies:
-        if (row, col) in get_moves(*enemy, False):
+        if (row, col) in get_moves(*enemy, False, board):
             safe = False
             break
 
@@ -239,9 +239,9 @@ def is_king_safe(row, col):
 
     enemies = get_figures(enemy_color)
 
-    return is_safe(k_r, k_c, enemies)
+    return is_safe(k_r, k_c, enemies, next_board)
 
-def get_line_moves(figure, row, col, r_shift, c_shift):
+def get_line_moves(figure, row, col, r_shift, c_shift, board):
     moves = []
 
     i = row + r_shift
@@ -260,7 +260,7 @@ def get_line_moves(figure, row, col, r_shift, c_shift):
     
     return moves
 
-def get_pawn_moves(figure, row, col):
+def get_pawn_moves(figure, row, col, board):
     r_shift = 1 if figure in whites else - 1
 
     moves = []
@@ -280,85 +280,85 @@ def get_pawn_moves(figure, row, col):
 
     return moves
 
-def get_rook_moves(figure, row, col):
+def get_rook_moves(figure, row, col, board):
     return [
-        *get_line_moves(figure, row, col, 0, 1), 
-        *get_line_moves(figure, row, col, 1, 0), 
-        *get_line_moves(figure, row, col, 0, -1), 
-        *get_line_moves(figure, row, col, -1, 0),
+        *get_line_moves(figure, row, col, 0, 1, board),
+        *get_line_moves(figure, row, col, 1, 0, board),
+        *get_line_moves(figure, row, col, 0, -1, board),
+        *get_line_moves(figure, row, col, -1, 0, board),
     ]
     
-def get_knight_moves(figure, row, col):
+def get_knight_moves(figure, row, col, board):
     return [
-        *get_line_moves(figure, row, col, 1, 2),
-        *get_line_moves(figure, row, col, 2, 1),
-        *get_line_moves(figure, row, col, 2, -1),
-        *get_line_moves(figure, row, col, 1, -2),
-        *get_line_moves(figure, row, col, -1, -2),
-        *get_line_moves(figure, row, col, -2, -1),
-        *get_line_moves(figure, row, col, -2, 1),
-        *get_line_moves(figure, row, col, -1, 2),
+        *get_line_moves(figure, row, col, 1, 2, board),
+        *get_line_moves(figure, row, col, 2, 1, board),
+        *get_line_moves(figure, row, col, 2, -1, board),
+        *get_line_moves(figure, row, col, 1, -2, board),
+        *get_line_moves(figure, row, col, -1, -2, board),
+        *get_line_moves(figure, row, col, -2, -1, board),
+        *get_line_moves(figure, row, col, -2, 1, board),
+        *get_line_moves(figure, row, col, -1, 2, board),
     ]
 
-def get_bishop_moves(figure, row, col):
+def get_bishop_moves(figure, row, col, board):
     return [
-        *get_line_moves(figure, row, col, 1, 1), 
-        *get_line_moves(figure, row, col, 1, -1), 
-        *get_line_moves(figure, row, col, -1, 1), 
-        *get_line_moves(figure, row, col, -1, -1), 
+        *get_line_moves(figure, row, col, 1, 1, board), 
+        *get_line_moves(figure, row, col, 1, -1, board), 
+        *get_line_moves(figure, row, col, -1, 1, board), 
+        *get_line_moves(figure, row, col, -1, -1, board), 
     ]
 
-def get_royal_moves(figure, row, col, real=True):
+def get_royal_moves(figure, row, col, board, real=True):
     moves = [
-        *get_bishop_moves(figure, row, col),
-        *get_rook_moves(figure, row, col)
+        *get_bishop_moves(figure, row, col, board),
+        *get_rook_moves(figure, row, col, board)
     ]
 
-    if figure in "Kk" and real: 
-        color = "black" if figure in whites else "white"
-        enemies = get_figures(color)
-        moves = list(filter(lambda move: is_safe(*move, enemies), moves))
+    # if figure in "Kk" and real: 
+    #     color = "black" if figure in whites else "white"
+    #     enemies = get_figures(color)
+    #     moves = list(filter(lambda move: is_safe(*move, enemies, board), moves))
 
     return moves
 
-def get_king_moves(figure, row, col, real=True):
+def get_king_moves(figure, row, col, board, real=True):
     moves = get_royal_moves(figure, row, col, real)
 
     if (row, col) in start_positions:
         color = "black" if figure in whites else "white"
         enemies = get_figures(color)
 
-        if (row, 0) in start_positions and (row, 2) in moves and not board[row][1] and is_safe(row, 1, enemies):
+        if (row, 0) in start_positions and (row, 2) in moves and not board[row][1] and is_safe(row, 1, enemies, board):
             moves.append((row, 1))
 
-        if (row, 7) in start_positions and (row, 4) in moves and not (board[row][6] or board[row][5]) and is_safe(row, 5, enemies):
+        if (row, 7) in start_positions and (row, 4) in moves and not (board[row][6] or board[row][5]) and is_safe(row, 5, enemies, board):
             moves.append((row, 5))
 
     return moves
 
-def get_moves(row, col, real=True):
+def get_moves(row, col, board, real=True):
     figure = board[row][col]
     
     if not figure:
         return []
 
     if figure in "Pp":
-        return get_pawn_moves(figure, row, col)
+        return get_pawn_moves(figure, row, col, board)
     
     if figure in "Rr":
-        return get_rook_moves(figure, row, col)
+        return get_rook_moves(figure, row, col, board)
     
     if figure in "Nn":
-        return get_knight_moves(figure, row, col)
+        return get_knight_moves(figure, row, col, board)
     
     if figure in "Bb":
-        return get_bishop_moves(figure, row, col)
+        return get_bishop_moves(figure, row, col, board)
 
     if figure in "Qq":
-        return get_royal_moves(figure, row, col)
+        return get_royal_moves(figure, row, col, board)
     
     if figure in "Kk":
-        return get_king_moves(figure, row, col, real)
+        return get_king_moves(figure, row, col, board, real)
     
     return []
         
@@ -467,7 +467,7 @@ while True:
                     make_move(*target)
                 if has_figure(current_player, row, col):
                     selection = (row, col)
-                    suggestions = filter(lambda move: is_king_safe(*move), get_moves(row, col))
+                    suggestions = list(filter(lambda move: is_king_safe(*move), get_moves(row, col)))
         
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_TAB:
