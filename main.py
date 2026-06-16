@@ -82,13 +82,13 @@ def render_board(data, screen):
 
             square_rect = pygame.Rect(x, y, SQUARE_SIZE, SQUARE_SIZE)
             
-            if item != " ":
+            pygame.draw.rect(board_surface, color, (x, y, SQUARE_SIZE, SQUARE_SIZE))
+
+            if item != "":
                 figure = symbols.get(item)
                 figure_text = font.render(figure, True, (0, 0, 0))
                 figure_rect = figure_text.get_rect(center=square_rect.center)
-
-            pygame.draw.rect(board_surface, color, (x, y, SQUARE_SIZE, SQUARE_SIZE))
-            board_surface.blit(figure_text, figure_rect)
+                board_surface.blit(figure_text, figure_rect)
 
     render_labels(screen)
 
@@ -158,15 +158,15 @@ def render_choices(surface, color):
         choice_rect = choice_surface.get_rect(
         center=surface.get_rect().center
     )
-        
-        pygame.draw.rect(
-        choice_surface,
-        (40, 30, 20),
-        choice_surface.get_rect(),
-        4
-    )
 
         choice_surface.blit(figure_text, figure_rect)
+
+    pygame.draw.rect(
+    choice_surface,
+    (40, 30, 20),
+    choice_surface.get_rect(),
+    4
+)
 
     x = (surface.get_width() - choice_width) // 2
     y = (surface.get_height() - choice_height) // 2
@@ -188,7 +188,7 @@ def draw_selection(row, col):
     
     pygame.draw.rect(screen, (100, 150, 255), (x, y, SQUARE_SIZE, SQUARE_SIZE), 4)
 
-def get_figures(color):
+def get_figures(color, board):
     colored = whites if color == "white" else blacks
     figures = []
 
@@ -199,7 +199,7 @@ def get_figures(color):
 
     return figures
 
-def can_go(figure, row, col):
+def can_go(figure, row, col, board):
     if (col > 7 or col < 0) or (row > 7 or row < 0):
         return (False, False)
     
@@ -215,7 +215,7 @@ def is_safe(row, col, enemies, board):
     board[row][col] = "*"
 
     for enemy in enemies:
-        if (row, col) in get_moves(*enemy, False, board):
+        if (row, col) in get_moves(*enemy, board, False):
             safe = False
             break
 
@@ -237,7 +237,7 @@ def is_king_safe(row, col):
     k_r = next((i for i, line in enumerate(next_board) if king in line), - 1)
     k_c = next_board[k_r].index(king)
 
-    enemies = get_figures(enemy_color)
+    enemies = get_figures(enemy_color, next_board)
 
     return is_safe(k_r, k_c, enemies, next_board)
 
@@ -248,7 +248,7 @@ def get_line_moves(figure, row, col, r_shift, c_shift, board):
     j = col + c_shift
 
     while 0 <= i < len(board) and 0 <= j < len(board):
-        here, further = can_go(figure, i, j)
+        here, further = can_go(figure, i, j, board)
         if not here: break
 
         moves.append((i, j))
@@ -265,17 +265,17 @@ def get_pawn_moves(figure, row, col, board):
 
     moves = []
 
-    here, further = can_go(figure, row + r_shift, col)
+    here, further = can_go(figure, row + r_shift, col, board)
     if here and further: moves.append((row + r_shift, col))
 
     if moves and (row == 1 or row == 6): 
-        here, further = can_go(figure, row + r_shift * 2, col)
+        here, further = can_go(figure, row + r_shift * 2, col, board)
         if here and further: moves.append((row + r_shift * 2, col))
 
-    here, further = can_go(figure, row + r_shift, col - 1)
+    here, further = can_go(figure, row + r_shift, col - 1, board)
     if (here and not further): moves.append((row + r_shift, col - 1))
 
-    here, further = can_go(figure, row + r_shift, col + 1)
+    here, further = can_go(figure, row + r_shift, col + 1, board)
     if (here and not further): moves.append((row + r_shift, col + 1))
 
     return moves
@@ -316,17 +316,17 @@ def get_royal_moves(figure, row, col, board, real=True):
 
     # if figure in "Kk" and real: 
     #     color = "black" if figure in whites else "white"
-    #     enemies = get_figures(color)
+    #     enemies = get_figures(color, board)
     #     moves = list(filter(lambda move: is_safe(*move, enemies, board), moves))
 
     return moves
 
 def get_king_moves(figure, row, col, board, real=True):
-    moves = get_royal_moves(figure, row, col, real)
+    moves = get_royal_moves(figure, row, col, board, real)
 
     if (row, col) in start_positions:
         color = "black" if figure in whites else "white"
-        enemies = get_figures(color)
+        enemies = get_figures(color, board)
 
         if (row, 0) in start_positions and (row, 2) in moves and not board[row][1] and is_safe(row, 1, enemies, board):
             moves.append((row, 1))
@@ -467,7 +467,7 @@ while True:
                     make_move(*target)
                 if has_figure(current_player, row, col):
                     selection = (row, col)
-                    suggestions = list(filter(lambda move: is_king_safe(*move), get_moves(row, col)))
+                    suggestions = list(filter(lambda move: is_king_safe(*move), get_moves(row, col, board, True)))
         
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_TAB:
