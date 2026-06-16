@@ -223,6 +223,24 @@ def is_safe(row, col, enemies):
 
     return safe
 
+def is_king_safe(row, col):
+    next_board = [row.copy() for row in board]
+
+    r, c = selection
+    next_board[row][col] = next_board[r][c]
+    next_board[r][c] = ""
+
+    enemy_color = "black" if current_player == "white" else "white"
+
+    king = "k" if current_player == "black" else "K"
+
+    k_r = next((i for i, line in enumerate(next_board) if king in line), - 1)
+    k_c = next_board[k_r].index(king)
+
+    enemies = get_figures(enemy_color)
+
+    return is_safe(k_r, k_c, enemies)
+
 def get_line_moves(figure, row, col, r_shift, c_shift):
     moves = []
 
@@ -449,7 +467,7 @@ while True:
                     make_move(*target)
                 if has_figure(current_player, row, col):
                     selection = (row, col)
-                    suggestions = get_moves(row, col)
+                    suggestions = filter(lambda move: is_king_safe(*move), get_moves(row, col))
         
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_TAB:
