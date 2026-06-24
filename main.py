@@ -177,19 +177,30 @@ def render_choices(surface, color):
 def show_final_screen():
     font = pygame.font.Font(None, 60)
 
+    color = "White" if current_player == "black" else "Black"
+
     surface = pygame.Surface((450, 300))
-
-    game_over_text = font.render("GAME OVER", True, GAME_OVER_COLOR)
-    restart
-
     surface.fill((24, 22, 20))
 
+    game_over_text = font.render("GAME OVER", True, GAME_OVER_COLOR)
+    who_wins_text = font.render(f"{color} wins", True, (255, 255, 255))
+    restart_text = font.render("Restart", True, (0, 0, 0))
+
     text_rect = game_over_text.get_rect(center=surface.get_rect().center, top=50)
+    wins_rect = who_wins_text.get_rect(center=surface.get_rect().center, top=100)
+
+    restart_button_rect = pygame.Rect(125, 200, 200, 60)
+
+    pygame.draw.rect(surface, (200, 200, 50), restart_button_rect)
+    pygame.draw.rect(surface, (90, 60, 35), restart_button_rect, 3)
+
+    button_text_rect = restart_text.get_rect(center=restart_button_rect.center)
+    surface.blit(restart_text, button_text_rect)
 
     surface.blit(game_over_text, text_rect)
+    surface.blit(who_wins_text, wins_rect)
 
     surface_rect = surface.get_rect(center=screen.get_rect().center)
-
     screen.blit(surface, surface_rect)
 
 def has_figure(color, row, col):
