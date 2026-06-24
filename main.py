@@ -12,6 +12,7 @@ LIGHT_COLOR = (240, 217, 181)
 DARK_COLOR = (181, 136, 99)
 BG_COLOR = (30, 30, 30)
 CHOICE_COLOR = (211, 177, 140)
+GAME_OVER_COLOR = (220, 55, 45)
 
 start_positions = [
     (0, 0), (0, 3), (0, 7),
@@ -172,6 +173,24 @@ def render_choices(surface, color):
     y = (surface.get_height() - choice_height) // 2
 
     surface.blit(choice_surface, (x, y))
+
+def show_final_screen():
+    font = pygame.font.Font(None, 60)
+
+    surface = pygame.Surface((450, 300))
+
+    game_over_text = font.render("GAME OVER", True, GAME_OVER_COLOR)
+    restart
+
+    surface.fill((24, 22, 20))
+
+    text_rect = game_over_text.get_rect(center=surface.get_rect().center, top=50)
+
+    surface.blit(game_over_text, text_rect)
+
+    surface_rect = surface.get_rect(center=screen.get_rect().center)
+
+    screen.blit(surface, surface_rect)
 
 def has_figure(color, row, col):
     if color == "white":
@@ -361,7 +380,18 @@ def get_moves(row, col, board, real=True):
         return get_king_moves(figure, row, col, board, real)
     
     return []
+
+def checkmate():
+    global game_over
+
+    figures = get_figures(current_player, board)
+
+    for figure in figures:
+        if get_moves(*figure, board, False):
+            return 
         
+    game_over = True 
+
 def draw_suggestion(moves):
     for row, col in moves:
         x = col * SQUARE_SIZE + PADDING
@@ -427,12 +457,16 @@ suggestions = []
 current_player = "white"
 
 choice = False
+game_over = True
 
 while True:
     clock.tick(60)
 
     screen.fill(BG_COLOR)
     render_board(board, screen)
+
+    if game_over:
+        show_final_screen()
     
     if choice:
         render_choices(screen, current_player)
@@ -441,7 +475,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not game_over:
             mouse_x, mouse_y = event.pos
             
 
@@ -465,7 +499,8 @@ while True:
 
                 if selection and target in suggestions:
                     make_move(*target)
-                if has_figure(current_player, row, col):
+                    checkmate()
+                elif has_figure(current_player, row, col):
                     selection = (row, col)
                     suggestions = list(filter(lambda move: is_king_safe(*move), get_moves(row, col, board, True)))
         
