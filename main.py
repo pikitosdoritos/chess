@@ -39,8 +39,7 @@ whites = ("R", "N", "B", "Q", "K", "P")
 blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr"
-start_board = "111K1111/11111111/8/8/8/8/11111111/r11k111r"
- 
+
 pygame.init()
 
 screen = pygame.display.set_mode((BOARD_SIZE + PADDING * 2, BOARD_SIZE + PADDING * 2))
