@@ -39,8 +39,7 @@ whites = ("R", "N", "B", "Q", "K", "P")
 blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr"
-start_board = "1NBKQBNR/pPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr"
-
+start_board = "R11K1111/1b111111/8/8/8/8/11111111/r11k111r"
  
 pygame.init()
 
@@ -65,7 +64,11 @@ def generate_board(schema):
                 squares.append(char)
 
         board.append(squares)
-    
+
+    for i, (row, col) in enumerate(start_positions):
+        if board[row][col] != "RKRrkr"[i]:
+            start_positions.remove((row, col))
+
     return board
 
 def render_board(data, screen):
@@ -456,6 +459,8 @@ def make_move(row, col):
     board[row][col] = board[r][c]
     board[r][c] = ""
 
+    if (row, col) in start_positions: start_positions.remove((row, col))
+
     suggestions = []
 
     if board[row][col] in "Pp" and (row == 0 or row == 7):
@@ -488,9 +493,7 @@ suggestions = []
 current_player = "white"
 
 choice = False
-game_over = True
-
-
+game_over = False
 
 while True:
     clock.tick(60)
@@ -515,6 +518,10 @@ while True:
                 sys.exit()
 
             if game_over and restart_btn.collidepoint(event.pos):
+                start_positions = [
+                    (0, 0), (0, 3), (0, 7),
+                    (7, 0), (7, 3), (7, 7)
+                ]
                 board = generate_board(start_board)
                 selection = None
                 suggestions = []
