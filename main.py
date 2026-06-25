@@ -39,7 +39,7 @@ whites = ("R", "N", "B", "Q", "K", "P")
 blacks = ("r", "n", "b", "q", "k", "p")
 
 start_board = "RNBKQBNR/PPPPPPPP/8/8/8/8/pppppppp/rnbkqbnr"
-start_board = "R11K1111/1b111111/8/8/8/8/11111111/r11k111r"
+start_board = "111K1111/11111111/8/8/8/8/11111111/r11k111r"
  
 pygame.init()
 
@@ -279,7 +279,7 @@ def is_safe(row, col, enemies, board):
 def is_king_safe(row, col):
     next_board = [row.copy() for row in board]
 
-    r, c = selection
+    r, c = selection or (row, col)
     next_board[row][col] = next_board[r][c]
     next_board[r][c] = ""
 
@@ -367,11 +367,6 @@ def get_royal_moves(figure, row, col, board, real=True):
         *get_rook_moves(figure, row, col, board)
     ]
 
-    # if figure in "Kk" and real: 
-    #     color = "black" if figure in whites else "white"
-    #     enemies = get_figures(color, board)
-    #     moves = list(filter(lambda move: is_safe(*move, enemies, board), moves))
-
     return moves
 
 def get_king_moves(figure, row, col, board, real=True):
@@ -381,10 +376,10 @@ def get_king_moves(figure, row, col, board, real=True):
         color = "black" if figure in whites else "white"
         enemies = get_figures(color, board)
 
-        if (row, 0) in start_positions and (row, 2) in moves and not board[row][1] and is_safe(row, 1, enemies, board):
+        if (row, 0) in start_positions and (row, 2) in moves and is_safe(row, 2, enemies, board) and not board[row][1] and is_safe(row, 1, enemies, board):
             moves.append((row, 1))
 
-        if (row, 7) in start_positions and (row, 4) in moves and not (board[row][6] or board[row][5]) and is_safe(row, 5, enemies, board):
+        if (row, 7) in start_positions and (row, 4) in moves and is_safe(row, 4, enemies, board) and not (board[row][6] or board[row][5]) and is_safe(row, 5, enemies, board):
             moves.append((row, 5))
 
     return moves
@@ -421,7 +416,7 @@ def checkmate():
     figures = get_figures(current_player, board)
 
     for figure in figures:
-        if get_moves(*figure, board, False):
+        if list(filter(lambda move: is_king_safe(*move), get_moves(*figure, board, True))):
             return 
         
     game_over = True 
