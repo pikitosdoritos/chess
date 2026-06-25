@@ -179,29 +179,49 @@ def show_final_screen():
 
     color = "White" if current_player == "black" else "Black"
 
-    surface = pygame.Surface((450, 300))
+    surface = pygame.Surface((550, 400))
     surface.fill((24, 22, 20))
 
     game_over_text = font.render("GAME OVER", True, GAME_OVER_COLOR)
     who_wins_text = font.render(f"{color} wins", True, (255, 255, 255))
     restart_text = font.render("Restart", True, (0, 0, 0))
+    quit_text = font.render("Quit", True, (0, 0, 0))
 
     text_rect = game_over_text.get_rect(center=surface.get_rect().center, top=50)
     wins_rect = who_wins_text.get_rect(center=surface.get_rect().center, top=100)
 
-    restart_button_rect = pygame.Rect(125, 200, 200, 60)
+    restart_button_rect = pygame.Rect(175, 200, 200, 60)
+    quit_button_rect = pygame.Rect(175, 300, 200, 60)
 
     pygame.draw.rect(surface, (200, 200, 50), restart_button_rect)
     pygame.draw.rect(surface, (90, 60, 35), restart_button_rect, 3)
 
-    button_text_rect = restart_text.get_rect(center=restart_button_rect.center)
-    surface.blit(restart_text, button_text_rect)
+    pygame.draw.rect(surface, (230, 0, 0), quit_button_rect)
+    pygame.draw.rect(surface, (90, 60, 35), quit_button_rect, 3)
+
+    restart_button_text_rect = restart_text.get_rect(center=restart_button_rect.center)
+    surface.blit(restart_text, restart_button_text_rect)
+
+    quit_button_text_rect = quit_text.get_rect(center=quit_button_rect.center)
+    surface.blit(quit_text, quit_button_text_rect)
 
     surface.blit(game_over_text, text_rect)
     surface.blit(who_wins_text, wins_rect)
 
     surface_rect = surface.get_rect(center=screen.get_rect().center)
-    screen.blit(surface, surface_rect)
+    screen.blit(surface, surface_rect) 
+
+    restart_button_screen_rect = restart_button_rect.move(
+        surface_rect.x,
+        surface_rect.y
+    )
+
+    quit_button_screen_rect = quit_button_rect.move(
+        surface_rect.x, 
+        surface_rect.y
+    )
+
+    return restart_button_screen_rect, quit_button_screen_rect
 
 def has_figure(color, row, col):
     if color == "white":
@@ -470,6 +490,8 @@ current_player = "white"
 choice = False
 game_over = True
 
+
+
 while True:
     clock.tick(60)
 
@@ -477,7 +499,7 @@ while True:
     render_board(board, screen)
 
     if game_over:
-        show_final_screen()
+        restart_btn, quit_btn = show_final_screen()
     
     if choice:
         render_choices(screen, current_player)
@@ -486,34 +508,46 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not game_over:
-            mouse_x, mouse_y = event.pos
-            
 
-            if choice:
-                start_x = (screen.get_width() - 4 * SQUARE_SIZE) // 2
-                start_y = (screen.get_height() - SQUARE_SIZE) // 2
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            if game_over and quit_btn.collidepoint(event.pos):
+                pygame.quit()
+                sys.exit()
 
-                row = (mouse_y - start_y) // SQUARE_SIZE
-                col = (mouse_x - start_x) // SQUARE_SIZE
+            if game_over and restart_btn.collidepoint(event.pos):
+                board = generate_board(start_board)
+                selection = None
+                suggestions = []
+                current_player = "white"
+                choice = False
+                game_over = False
+            else:    
+                mouse_x, mouse_y = event.pos
+                
+                if choice:
+                    start_x = (screen.get_width() - 4 * SQUARE_SIZE) // 2
+                    start_y = (screen.get_height() - SQUARE_SIZE) // 2
 
-                if row == 0 and 0 <= col < 4:
-                    choose_figure(col)
+                    row = (mouse_y - start_y) // SQUARE_SIZE
+                    col = (mouse_x - start_x) // SQUARE_SIZE
 
-                break
+                    if row == 0 and 0 <= col < 4:
+                        choose_figure(col)
 
-            row = (mouse_y - PADDING) // SQUARE_SIZE
-            col = (mouse_x - PADDING) // SQUARE_SIZE
+                    break
 
-            if 0 <= row < ROWS and 0 <= col < COLS:
-                target = (row, col)
+                row = (mouse_y - PADDING) // SQUARE_SIZE
+                col = (mouse_x - PADDING) // SQUARE_SIZE
 
-                if selection and target in suggestions:
-                    make_move(*target)
-                    checkmate()
-                elif has_figure(current_player, row, col):
-                    selection = (row, col)
-                    suggestions = list(filter(lambda move: is_king_safe(*move), get_moves(row, col, board, True)))
+                if 0 <= row < ROWS and 0 <= col < COLS:
+                    target = (row, col)
+
+                    if selection and target in suggestions:
+                        make_move(*target)
+                        checkmate()
+                    elif has_figure(current_player, row, col):
+                        selection = (row, col)
+                        suggestions = list(filter(lambda move: is_king_safe(*move), get_moves(row, col, board, True)))
         
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_TAB:
